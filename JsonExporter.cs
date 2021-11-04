@@ -61,9 +61,9 @@ namespace excel2json
             {   // single sheet
 
                 //-- convert to object
-                object sheetValue = convertSheet(validSheets[0], exportArray, lowcase, excludePrefix, cellJson, allString);
+                convertSheet(validSheets[0], exportArray, lowcase, excludePrefix, cellJson, allString);
                 //-- convert to json string
-                mContext = JsonConvert.SerializeObject(sheetValue, jsonSettings);
+                //mContext = JsonConvert.SerializeObject(sheetValue, jsonSettings);
             }
             else
             { // mutiple sheet
@@ -71,21 +71,22 @@ namespace excel2json
                 Dictionary<string, object> data = new Dictionary<string, object>();
                 foreach (var sheet in validSheets)
                 {
-                    object sheetValue = convertSheet(sheet, exportArray, lowcase, excludePrefix, cellJson, allString);
-                    data.Add(sheet.TableName, sheetValue);
+                    convertSheet(sheet, exportArray, lowcase, excludePrefix, cellJson, allString);
+                    //data.Add(sheet.TableName, sheetValue);
                 }
 
                 //-- convert to json string
-                mContext = JsonConvert.SerializeObject(data, jsonSettings);
+                //mContext = JsonConvert.SerializeObject(data, jsonSettings);
             }
+
         }
 
-        private object convertSheet(DataTable sheet, bool exportArray, bool lowcase, string excludePrefix, bool cellJson, bool allString)
+        private void convertSheet(DataTable sheet, bool exportArray, bool lowcase, string excludePrefix, bool cellJson, bool allString)
         {
             if (exportArray)
-                return convertSheetToArray(sheet, lowcase, excludePrefix, cellJson, allString);
+                convertSheetToArray(sheet, lowcase, excludePrefix, cellJson, allString);
             else
-                return convertSheetToDict(sheet, lowcase, excludePrefix, cellJson, allString);
+                convertSheetToDict(sheet, lowcase, excludePrefix, cellJson, allString);
         }
 
         private object convertSheetToArray(DataTable sheet, bool lowcase, string excludePrefix, bool cellJson, bool allString)
@@ -116,12 +117,14 @@ namespace excel2json
         /// <returns></returns>
         JsonData GetJsonDataBySheetName(string sheetName)
         {
-            if(jsonDataByName.ContainsKey(sheetName))
-                return jsonDataByName[sheetName];
+            //sheetname 裁剪
+            string trimedSheetName = Regex.Replace(sheetName, @"_.*", "");
+            if (jsonDataByName.ContainsKey(trimedSheetName))
+                return jsonDataByName[trimedSheetName];
             else
             {
-                jsonDataByName.Add(sheetName, new JsonData());
-                return jsonDataByName[sheetName];
+                jsonDataByName.Add(trimedSheetName, new JsonData());
+                return jsonDataByName[trimedSheetName];
             }
         }
         /// <summary>
@@ -361,18 +364,25 @@ namespace excel2json
             return "";
         }
 
+
         /// <summary>
         /// 将内部数据转换成Json文本，并保存至文件
         /// </summary>
         /// <param name="jsonPath">输出文件路径</param>
         public void SaveToFile(string filePath, Encoding encoding)
         {
-            //-- 保存文件
-            using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            foreach (var pair in jsonDataByName)
             {
-                using (TextWriter writer = new StreamWriter(file, encoding))
-                    writer.Write(mContext);
+                string sheetName = pair.Key;
+                JsonData jd = pair.Value;
+                //-- 保存文件
+                using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    using (TextWriter writer = new StreamWriter(file, encoding))
+                        writer.Write(jd.ToString());
+                }
             }
+
         }
     }
 }

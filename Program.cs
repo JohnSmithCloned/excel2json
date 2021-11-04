@@ -25,7 +25,8 @@ namespace excel2json
                 Console.WriteLine("Launch excel2json GUI Mode...");
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new GUI.MainForm());
+                //Application.Run(new GUI.MainForm());
+                Application.Run(new GUI.DFExcelToolForm());
             }
             else
             {
