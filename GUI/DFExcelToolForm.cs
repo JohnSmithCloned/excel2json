@@ -34,10 +34,7 @@ namespace excel2json.GUI
                 MessageBox.Show("请填写保存路径!");
                 return;
             }
-
-
-            //todo 导出并保存
-
+            //导出并保存
             foreach (string path in listBox1.Items)
             {
                 //-- Load Excel
@@ -53,6 +50,8 @@ namespace excel2json.GUI
             }
             Settings.Default.savePath = textBox_savePath.Text;
             Settings.Default.Save();
+
+            MessageBox.Show($"文件数量{listBox1.Items.Count}", "导出操作完成");
         }
 
         /// <summary>
