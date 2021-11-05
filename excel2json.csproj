@@ -146,6 +146,7 @@
     <None Include="Resources\SQL.png" />
     <None Include="Resources\clipboard.png" />
     <None Include="Resources\code.png" />
+    <Content Include="appicon.ico" />
     <Content Include="CSkin 4.0\CSkin.dll" />
     <Content Include="CSkin 4.0\CSkin.XML" />
     <Content Include="Resources\excel.png" />

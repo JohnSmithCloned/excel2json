@@ -38,7 +38,7 @@
             // 
             // textBox_savePath
             // 
-            this.textBox_savePath.Location = new System.Drawing.Point(34, 66);
+            this.textBox_savePath.Location = new System.Drawing.Point(26, 71);
             this.textBox_savePath.Name = "textBox_savePath";
             this.textBox_savePath.Size = new System.Drawing.Size(290, 20);
             this.textBox_savePath.TabIndex = 0;
@@ -46,11 +46,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(31, 44);
+            this.label1.Location = new System.Drawing.Point(27, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(123, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "导出路径[ Data文件夹]";
+            this.label1.Text = "导出路径 [Data文件夹]";
             // 
             // button_saveToFile
             // 
@@ -66,7 +66,7 @@
             // 
             this.listBox1.AllowDrop = true;
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(34, 126);
+            this.listBox1.Location = new System.Drawing.Point(26, 131);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(347, 108);
             this.listBox1.TabIndex = 3;
@@ -76,7 +76,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(31, 98);
+            this.label2.Location = new System.Drawing.Point(26, 103);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(93, 13);
             this.label2.TabIndex = 4;
@@ -84,7 +84,7 @@
             // 
             // button_clearList
             // 
-            this.button_clearList.Location = new System.Drawing.Point(156, 93);
+            this.button_clearList.Location = new System.Drawing.Point(153, 95);
             this.button_clearList.Name = "button_clearList";
             this.button_clearList.Size = new System.Drawing.Size(135, 27);
             this.button_clearList.TabIndex = 5;
@@ -104,7 +104,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_savePath);
             this.Name = "DFExcelToolForm";
-            this.Text = "DFExcelToolForm";
+            this.Text = "转表神器-大禹工作室";
             this.ResumeLayout(false);
             this.PerformLayout();
 
