@@ -190,8 +190,27 @@ namespace excel2json
                         {
                             if (paramName == "Value")
                             {
-                                string fatherKey = KeyStrList[0];
-                                outerJd[fatherKey] = tileContent;
+                                //常量表 数字 字符串 数组
+                                string fatherKey = KeyStrList[0].Trim();
+                                object obj = ParseValueString(tileContent.Trim());
+                                switch (obj)
+                                {
+                                    case bool _:
+                                        outerJd[fatherKey] = (bool)obj;
+                                        break;
+                                    case string _:
+                                        outerJd[fatherKey] = (string)obj;
+                                        break;
+                                    case long _:
+                                        outerJd[fatherKey] = (long)obj;
+                                        break;
+                                    case float _:
+                                        outerJd[fatherKey] = (float)obj;
+                                        break;
+                                    case JsonData _:
+                                        outerJd[fatherKey] = (JsonData)obj;
+                                        break;
+                                }
                             }
                             else
                             {
@@ -228,7 +247,7 @@ namespace excel2json
                         break;
                     case "integer":
                     case "int":
-                        obj = new JsonData(int.Parse(data));
+                        obj = new JsonData(long.Parse(data));
                         break;
                     case "float":
                         obj = new JsonData(float.Parse(data));
@@ -245,6 +264,34 @@ namespace excel2json
                 MessageBox.Show(debugMsg, "转表格出现问题");
             }
             return obj;
+        }
+
+        /// <summary>
+        /// 常量表的参数转对象 支持 整数 浮点数 bool 字符串 数组
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        object ParseValueString(string data)
+        {
+            long number = 0;
+            if (long.TryParse(data, out number))
+                return number;
+            float number2 = 0;
+            if (float.TryParse(data, out number2))
+                return number2;
+            if (data.StartsWith("\""))
+            {
+                return data.Substring(1, data.Length - 2);
+            }
+            if (data.StartsWith("["))
+            {
+                return ParseStringToJsonData(data);
+            }
+            string lower = data.ToLower();
+            if (lower.Equals("true") || lower.Equals("false"))
+                return lower.Equals("true");
+            return data;
         }
         private string GetExcelColumnName(int columnNumber)
         {

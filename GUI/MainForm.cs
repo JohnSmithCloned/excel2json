@@ -352,10 +352,13 @@ namespace excel2json.GUI
         }
 
         private void button1_Click(object sender, EventArgs e)
-        { 
-            string debugMsg = $" 数据是 {1} 数据类型是 {2}";
-            MessageBox.Show(debugMsg, "转json出现问题");
+        {
+            //string debugMsg = $" 数据是 {1} 数据类型是 {2}";
+            //MessageBox.Show(debugMsg, "转json出现问题");
 
+            string data = "\"Item11123\"";
+            MessageBox.Show(data.Substring(1, data.Length - 2));
+            MessageBox.Show(data);
         }
     }
 }
