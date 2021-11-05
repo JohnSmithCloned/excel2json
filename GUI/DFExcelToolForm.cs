@@ -46,15 +46,9 @@ namespace excel2json.GUI
                 //一个excel可能导出多个文件额
                 DFJsonExporter exporter = new DFJsonExporter(excel,
                     false, false, "yyyy/MM/dd", false, 3, "", false, false);
-
                 //-- Export path
                 string exportPath;
                 exportPath = textBox_savePath.Text;
-                //string fileName = Path.GetFileName(path);
-                //fileName = Path.ChangeExtension(fileName, "json");
-                //exportPath = Path.Combine(exportPath, fileName);
-                //-- Encoding
-                //Encoding cd = new UTF8(false);
                 exporter.SaveToFile(exportPath, Encoding.UTF8);
             }
             Settings.Default.savePath = textBox_savePath.Text;
