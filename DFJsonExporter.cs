@@ -30,6 +30,7 @@ namespace excel2json
         /// <param name="excel">ExcelLoader Object</param>
         public DFJsonExporter(ExcelLoader excel, bool lowcase, bool exportArray, string dateFormat, bool forceSheetName, int headerRows, string excludePrefix, bool cellJson, bool allString)
         {
+
             mHeaderRows = headerRows - 1;
             List<DataTable> validSheets = new List<DataTable>();
             for (int i = 0; i < excel.Sheets.Count; i++)
@@ -89,12 +90,16 @@ namespace excel2json
                 return jsonObjDict[trimedSheetName];
             }
         }
-        static class DebugMessage
+        public static class DebugMessage
         {
             public static string sheetName;
             public static string fileName;
             public static int rowIndex;
             public static int colIndex;
+            /// <summary>
+            /// 字段名称
+            /// </summary>
+            public static string paramName;
         }
 
         /// <summary>
@@ -102,6 +107,7 @@ namespace excel2json
         /// </summary>
         private object convertSheetToDict(DataTable sheet, bool lowcase, string excludePrefix, bool cellJson, bool allString)
         {
+            DebugMessage.sheetName = sheet.TableName;
             Dictionary<string, object> importData =
                 new Dictionary<string, object>();
             //key=第几列 value=字段数据类型 Integer
@@ -136,8 +142,8 @@ namespace excel2json
             JsonData lastJD = null;
             for (int i = firstDataRow; i < sheet.Rows.Count; i++)//逐行读取数据
             {
+                DebugMessage.rowIndex = i;
                 DataRow row = sheet.Rows[i];
-                JsonData jd = new JsonData();
                 bool foundKeyName = false;
                 for (int j = 0; j < kCount; j++)
                 {
@@ -174,9 +180,11 @@ namespace excel2json
                 if (foundKeyName)
                     for (int m = kCount; m < sheet.Columns.Count; m++)
                     {
+                        DebugMessage.colIndex = m;
                         string tileContent = row[m].ToString().Trim();
                         string paramName = headerDic[m]; //字段名 ItemId
                         string dataType = headerDataType[m]; //数据类型 String
+                        DebugMessage.paramName = paramName;
                         if (!string.IsNullOrEmpty(tileContent) && !string.IsNullOrEmpty(paramName)
                             && !string.IsNullOrEmpty(dataType))
                         {
@@ -232,10 +240,26 @@ namespace excel2json
             }
             catch (Exception e)
             {
-                MessageBox.Show($"转json出现问题 数据是 {data} 数据类型是 {format}");
+                string colName = GetExcelColumnName(DebugMessage.colIndex + 1);
+                string debugMsg = $"文件名 {DebugMessage.fileName} Sheet名 {DebugMessage.sheetName}\n字段名 {DebugMessage.paramName}\n坐标 {colName}{DebugMessage.rowIndex + 2}\n数据 {data}\n数据类型是 {format}";
+                MessageBox.Show(debugMsg, "转表格出现问题");
             }
             return obj;
         }
+        private string GetExcelColumnName(int columnNumber)
+        {
+            string columnName = "";
+
+            while (columnNumber > 0)
+            {
+                int modulo = (columnNumber - 1) % 26;
+                columnName = Convert.ToChar('A' + modulo) + columnName;
+                columnNumber = (columnNumber - modulo) / 26;
+            }
+
+            return columnName;
+        }
+
         /// <summary>
         /// 数组的字符串转json
         /// </summary>
@@ -263,6 +287,8 @@ namespace excel2json
                 string savePath = Path.Combine(filePath, sheetName);
                 savePath += ".json";
                 JsonData jd = pair.Value;
+                if (jd.Keys == null && jd.Keys.Count == 0)
+                    continue;
                 //-- 保存文件
                 using (FileStream file = new FileStream(savePath, FileMode.Create, FileAccess.Write))
                 {

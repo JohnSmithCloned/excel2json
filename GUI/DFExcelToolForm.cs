@@ -42,7 +42,7 @@ namespace excel2json.GUI
             {
                 //-- Load Excel
                 ExcelLoader excel = new ExcelLoader(path, 3);
-
+                DFJsonExporter.DebugMessage.fileName = Path.GetFileName(path);
                 //一个excel可能导出多个文件额
                 DFJsonExporter exporter = new DFJsonExporter(excel,
                     false, false, "yyyy/MM/dd", false, 3, "", false, false);
