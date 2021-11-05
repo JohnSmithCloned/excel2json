@@ -55,7 +55,7 @@ namespace excel2json
 
                         Console.WriteLine(
                             string.Format("[{0}]：\tConversion complete in [{1}ms].",
-                            Path.GetFileName(exportPath),
+                            Path.GetFileName(path),
                             dur.TotalMilliseconds)
                             );
                     }
