@@ -42,6 +42,10 @@
     <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
+    <Reference Include="CSkin, Version=16.1.14.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\UserFiles\Documents\GitHub\FairyXML2Lua\CSkin 4.0\CSkin.dll</HintPath>
+    </Reference>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
     </Reference>
@@ -78,6 +82,7 @@
     <Compile Include="GUI\DFExcelToolForm.Designer.cs">
       <DependentUpon>DFExcelToolForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DFJsonExporter.cs" />
     <Compile Include="JsonExporter.cs" />
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
@@ -93,6 +98,7 @@
     <Compile Include="LitJson\JsonReader.cs" />
     <Compile Include="LitJson\JsonWriter.cs" />
     <Compile Include="LitJson\Lexer.cs" />
+    <Compile Include="LitJson\Netstandard15Polyfill.cs" />
     <Compile Include="LitJson\ParserToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program.Options.cs" />
@@ -140,6 +146,8 @@
     <None Include="Resources\SQL.png" />
     <None Include="Resources\clipboard.png" />
     <None Include="Resources\code.png" />
+    <Content Include="CSkin 4.0\CSkin.dll" />
+    <Content Include="CSkin 4.0\CSkin.XML" />
     <Content Include="Resources\excel.png" />
     <Content Include="Resources\excel2json.ico" />
     <None Include="Resources\excel_64.png" />

@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using LitJson;
+using System.Text.RegularExpressions;
+
 namespace excel2json.GUI
 {
 
@@ -352,9 +354,12 @@ namespace excel2json.GUI
         private void button1_Click(object sender, EventArgs e)
         {
 
-            string arrayTest = "[ [123,44,5], [123,44,5],[123,44,5]]";
-            JsonData jd   =JsonMapper.ToObject(arrayTest);
-            Console.WriteLine(" jd json = " + jd.ToJson());
+            //string arrayTest = "[ [123,44,5], [123,44,5],[123,44,5]]";
+            //JsonData jd   =JsonMapper.ToObject(arrayTest);
+            JsonData jd = new JsonData();
+            jd["名称"] = "士大夫";
+            Console.WriteLine(" jd json = " + Regex.Unescape( jd.ToJson()));
+            Console.WriteLine(" 士大夫");
         }
     }
 }

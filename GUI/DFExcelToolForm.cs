@@ -8,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using CCWin;
+using System.IO;
 namespace excel2json.GUI
 {
-    public partial class DFExcelToolForm : Form
+    public partial class DFExcelToolForm : Skin_Color
     {
         public DFExcelToolForm()
         {
@@ -27,13 +28,37 @@ namespace excel2json.GUI
         /// <param name="e"></param>
         private void button_saveToFile_Click(object sender, EventArgs e)
         {
-            string savePath = Settings.Default.savePath;
-            if(string.IsNullOrEmpty(savePath))
+            string savePath = textBox_savePath.Text;
+            if (string.IsNullOrEmpty(savePath))
             {
                 MessageBox.Show("请填写保存路径!");
                 return;
             }
+
+
             //todo 导出并保存
+
+            foreach (string path in listBox1.Items)
+            {
+                //-- Load Excel
+                ExcelLoader excel = new ExcelLoader(path, 3);
+
+                //一个excel可能导出多个文件额
+                DFJsonExporter exporter = new DFJsonExporter(excel,
+                    false, false, "yyyy/MM/dd", false, 3, "", false, false);
+
+                //-- Export path
+                string exportPath;
+                exportPath = textBox_savePath.Text;
+                //string fileName = Path.GetFileName(path);
+                //fileName = Path.ChangeExtension(fileName, "json");
+                //exportPath = Path.Combine(exportPath, fileName);
+                //-- Encoding
+                //Encoding cd = new UTF8(false);
+                exporter.SaveToFile(exportPath, Encoding.UTF8);
+            }
+            Settings.Default.savePath = textBox_savePath.Text;
+            Settings.Default.Save();
         }
 
         /// <summary>
@@ -41,13 +66,34 @@ namespace excel2json.GUI
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void flowLayoutPanel2_DragDrop(object sender, DragEventArgs e)
+        private void listBox1_DragDrop(object sender, DragEventArgs e)
         {
+
             string[] dropData = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             if (dropData != null)
             {
                 //this.loadExcelAsync(dropData[0]);
+                int i;
+                for (i = 0; i < dropData.Length; i++)
+                {
+                    string path = dropData[i];
+                    if (path.EndsWith(".xlsx"))
+                        listBox1.Items.Add(dropData[i]);
+                }
             }
+        }
+
+        private void listBox1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.All;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void button_clearList_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
         }
     }
 }
