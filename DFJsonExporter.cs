@@ -342,8 +342,8 @@ namespace excel2json
                     StringBuilder sb = new StringBuilder();
                     JsonWriter jw = new JsonWriter(sb)
                     {
-                        PrettyPrint = true,
-                        IndentValue = 4
+                        PrettyPrint = true
+                        //IndentValue = 0
                     };
                     JsonMapper.ToJson(jd, jw);
                     string jdString = Regex.Unescape(sb.ToString());

@@ -46,7 +46,7 @@ namespace excel2json.GUI
                 //-- Export path
                 string exportPath;
                 exportPath = textBox_savePath.Text;
-                exporter.SaveToFile(exportPath, Encoding.UTF8);
+                exporter.SaveToFile(exportPath, Encoding.Default);
             }
             Settings.Default.savePath = textBox_savePath.Text;
             Settings.Default.Save();
