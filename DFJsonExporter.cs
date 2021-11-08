@@ -177,6 +177,7 @@ namespace excel2json
                     }
                     //Console.WriteLine($"keyName {j} = {keyName}");
                 }
+                bool isGlobalSheet = sheet.TableName == "GlobalConfig";
                 if (foundKeyName)
                     for (int m = kCount; m < sheet.Columns.Count; m++)
                     {
@@ -188,7 +189,7 @@ namespace excel2json
                         if (!string.IsNullOrEmpty(tileContent) && !string.IsNullOrEmpty(paramName)
                             && !string.IsNullOrEmpty(dataType))
                         {
-                            if (sheet.TableName == "GlobalConfig")//常量表特殊处理
+                            if (isGlobalSheet)//常量表特殊处理
                             {
                                 //常量表 数字 字符串 数组
                                 string fatherKey = KeyStrList[0].Trim();
