@@ -51,7 +51,7 @@ namespace excel2json
                         //-- Export path
                         string exportPath;
                         exportPath = Settings.Default.savePath;
-                        exporter.SaveToFile(exportPath, Encoding.UTF8);
+                        exporter.SaveToFile(exportPath, new UTF8Encoding(false));
 
                         Console.WriteLine(
                             string.Format("[{0}]：\tConversion complete in [{1}ms].",
