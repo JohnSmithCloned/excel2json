@@ -188,7 +188,7 @@ namespace excel2json
                         if (!string.IsNullOrEmpty(tileContent) && !string.IsNullOrEmpty(paramName)
                             && !string.IsNullOrEmpty(dataType))
                         {
-                            if (paramName == "Value")
+                            if (sheet.TableName == "GlobalConfig")//常量表特殊处理
                             {
                                 //常量表 数字 字符串 数组
                                 string fatherKey = KeyStrList[0].Trim();
