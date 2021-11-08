@@ -806,6 +806,9 @@ namespace LitJson
 
                 return;
             }
+            writer.WriteObjectStart();
+            writer.WriteObjectEnd();
+
         }
         #endregion
 
