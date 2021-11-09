@@ -36,7 +36,7 @@
     <StartupObject>excel2json.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\excel2json.ico</ApplicationIcon>
+    <ApplicationIcon>excel2json.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
@@ -149,6 +149,7 @@
     <Content Include="appicon.ico" />
     <Content Include="CSkin 4.0\CSkin.dll" />
     <Content Include="CSkin 4.0\CSkin.XML" />
+    <Content Include="excel2json.ico" />
     <Content Include="Resources\excel.png" />
     <Content Include="Resources\excel2json.ico" />
     <None Include="Resources\excel_64.png" />

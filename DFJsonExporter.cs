@@ -151,10 +151,16 @@ namespace excel2json
                     bool keyNameFilled = !string.IsNullOrEmpty(keyName);
                     if (keyNameFilled)
                     {
+                        DebugMessage.colIndex = j;
                         if (j == 0) //第一层 
                         {
                             //有填写子key 则新建JsonData
                             KeyStrList[0] = keyName;
+                            if (outerJd.ContainsKey(keyName))
+                            {
+                                ShowDublicateKeyError(j, keyName);
+                                return null;
+                            }
                             outerJd[keyName] = new JsonData();
                             lastJD = outerJd[keyName];
                         }
@@ -162,6 +168,11 @@ namespace excel2json
                         {
                             KeyStrList[1] = keyName;
                             var fatherJd = outerJd[KeyStrList[0]];
+                            if (fatherJd.ContainsKey(keyName))
+                            {
+                                ShowDublicateKeyError(j, keyName);
+                                return null;
+                            }
                             fatherJd[keyName] = new JsonData();
                             lastJD = fatherJd[keyName];
                         }
@@ -170,6 +181,11 @@ namespace excel2json
                             KeyStrList[2] = keyName;
                             var fatherJd1 = outerJd[KeyStrList[0]];
                             var fatherJd2 = fatherJd1[KeyStrList[1]];
+                            if (fatherJd2.ContainsKey(keyName))
+                            {
+                                ShowDublicateKeyError(j, keyName);
+                                return null;
+                            }
                             fatherJd2[keyName] = new JsonData();
                             lastJD = fatherJd2[keyName];
                         }
@@ -262,9 +278,15 @@ namespace excel2json
             {
                 string colName = GetExcelColumnName(DebugMessage.colIndex + 1);
                 string debugMsg = $"文件名 {DebugMessage.fileName} Sheet名 {DebugMessage.sheetName}\n字段名 {DebugMessage.paramName}\n坐标 {colName}{DebugMessage.rowIndex + 2}\n数据 {data}\n数据类型是 {format}";
-                MessageBox.Show(debugMsg, "转表格出现问题");
+                MessageBox.Show(debugMsg, "转表格出现问题:无效字段值");
             }
             return obj;
+        }
+        void ShowDublicateKeyError(int colIdx, string keyName)
+        {
+            string colName = GetExcelColumnName(DebugMessage.colIndex + 1);
+            string debugMsg = $"文件名 {DebugMessage.fileName} Sheet名 {DebugMessage.sheetName}\n 坐标{colName}{DebugMessage.rowIndex + 2} \n重复key值{keyName}";
+            MessageBox.Show(debugMsg, "转表格出现问题:重复Key值");
         }
 
         /// <summary>

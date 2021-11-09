@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DFExcelToolForm));
             this.textBox_savePath = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button_saveToFile = new System.Windows.Forms.Button();
@@ -103,6 +104,7 @@
             this.Controls.Add(this.button_saveToFile);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_savePath);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DFExcelToolForm";
             this.Text = "转表神器-大禹工作室";
             this.ResumeLayout(false);
