@@ -19,7 +19,7 @@ namespace excel2json.GUI
             InitializeComponent();
 
             textBox_savePath.Text = Settings.Default.savePath;
-
+            this.KeyPreview = true;
         }
         /// <summary>
         /// 点击导出并保存
@@ -87,6 +87,14 @@ namespace excel2json.GUI
         private void button_clearList_Click(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
+        }
+
+        private void listBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                listBox1.Items.RemoveAt(listBox1.SelectedIndex);
+            }
         }
     }
 }
