@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CCWin;
 using System.IO;
+using System.Text.RegularExpressions;
+
 namespace excel2json.GUI
 {
     public partial class DFExcelToolForm : Skin_Color
@@ -18,8 +20,15 @@ namespace excel2json.GUI
         {
             InitializeComponent();
 
-            textBox_savePath.Text = Settings.Default.savePath;
             this.KeyPreview = true;
+            textBox_savePath.Text = Settings.Default.savePath;
+
+            listBox1.Items.Clear();
+            if (Settings.Default.lastFileList != null)
+                foreach (var str in Settings.Default.lastFileList)
+                {
+                    listBox1.Items.Add(str);
+                }
         }
         /// <summary>
         /// 点击导出并保存
@@ -49,7 +58,6 @@ namespace excel2json.GUI
                 exporter.SaveToFile(exportPath, new UTF8Encoding(false));
             }
             Settings.Default.savePath = textBox_savePath.Text;
-            Settings.Default.Save();
 
             MessageBox.Show($"文件数量{listBox1.Items.Count}", "导出操作完成");
         }
@@ -95,6 +103,18 @@ namespace excel2json.GUI
             {
                 listBox1.Items.RemoveAt(listBox1.SelectedIndex);
             }
+        }
+
+        private void DFExcelToolForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //界面关闭时
+
+            Settings.Default.lastFileList = new System.Collections.Specialized.StringCollection();
+            foreach (var item in listBox1.Items)
+                Settings.Default.lastFileList.Add(item.ToString());
+
+            Settings.Default.Save();
+
         }
     }
 }

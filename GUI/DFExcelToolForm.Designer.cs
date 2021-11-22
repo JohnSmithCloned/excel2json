@@ -108,6 +108,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DFExcelToolForm";
             this.Text = "转表神器-大禹工作室";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DFExcelToolForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

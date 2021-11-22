@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using LitJson;
 using System.Windows.Forms;
+using excel2json.GUI;
+
 namespace excel2json
 {
     /// <summary>
@@ -278,7 +280,12 @@ namespace excel2json
             {
                 string colName = GetExcelColumnName(DebugMessage.colIndex + 1);
                 string debugMsg = $"文件名 {DebugMessage.fileName} Sheet名 {DebugMessage.sheetName}\n字段名 {DebugMessage.paramName}\n坐标 {colName}{DebugMessage.rowIndex + 2}\n数据 {data}\n数据类型是 {format}";
-                MessageBox.Show(debugMsg, "转表格出现问题:无效字段值");
+                var result = MessageBox.Show(debugMsg, "转表格出现问题:无效字段值", MessageBoxButtons.AbortRetryIgnore);
+                if (result == DialogResult.Abort)
+                {
+                    DFExcelToolForm.ActiveForm.Close();
+                }
+
             }
             return obj;
         }
@@ -286,7 +293,12 @@ namespace excel2json
         {
             string colName = GetExcelColumnName(DebugMessage.colIndex + 1);
             string debugMsg = $"文件名 {DebugMessage.fileName} Sheet名 {DebugMessage.sheetName}\n 坐标{colName}{DebugMessage.rowIndex + 2} \n重复key值{keyName}";
-            MessageBox.Show(debugMsg, "转表格出现问题:重复Key值");
+            var result = MessageBox.Show(debugMsg, "转表格出现问题:重复Key值", MessageBoxButtons.AbortRetryIgnore);
+
+            if (result == DialogResult.Abort)
+            {
+                DFExcelToolForm.ActiveForm.Close();
+            }
         }
 
         /// <summary>
@@ -338,11 +350,35 @@ namespace excel2json
         JsonData ParseStringToJsonData(string rawString)
         {
             rawString.Replace('，', ',');
+            var match = Regex.Match(rawString, @"[A-Za-z]");
+            if (match.Success)//包含字母 则自动加单引号
+            {
+                rawString = ArrayStringAddQuote(rawString);
+            }
+
             if (!rawString.StartsWith("["))
                 rawString = "[" + rawString;
             if (!rawString.EndsWith("]"))
                 rawString += "]";
+
             return JsonMapper.ToObject(rawString);
+        }
+        string ArrayStringAddQuote(string rawString)
+        {
+            string output = "";
+            string[] strArray = rawString.Split(',');
+            foreach (string str in strArray)
+            {
+                string str1 = str.Trim();
+                var match = Regex.Match(str1, "\"(.*)\"");
+                var match2 = Regex.Match(str1, "'(.*)'");
+                if (!match.Success && !match2.Success)
+                {
+                    str1 = "'" + str1 + "'";
+                }
+                output += str1 + ',';
+            }
+            return output.Substring(0, output.Length - 1);
         }
 
         /// <summary>
