@@ -269,7 +269,8 @@ namespace excel2json
                         obj = new JsonData(long.Parse(data));
                         break;
                     case "float":
-                        obj = new JsonData(float.Parse(data));
+                        decimal number = decimal.Parse(data);
+                        obj = new JsonData((double)decimal.Round(number, 4));
                         break;
                     case "array":
                         obj = ParseStringToJsonData(data);
