@@ -32,10 +32,18 @@ namespace excel2json
             {
                 //-- COMMAND LINE MODE -------------------------------------------------
                 Console.WriteLine(" cmd run excel to json");
+                string defineExportPath="";
+                string epHEAD = "export_path=";
                 foreach (string arg in args)
                 {
                     try
                     {
+                        if(arg.StartsWith(epHEAD))
+                        {
+                            defineExportPath = arg.Substring(epHEAD.Length);
+                            continue;
+                        }
+
                         DateTime startTime = DateTime.Now;
 
                         //-- 程序计时
@@ -50,7 +58,10 @@ namespace excel2json
                             false, false, "yyyy/MM/dd", false, 3, "", false, false);
                         //-- Export path
                         string exportPath;
-                        exportPath = Settings.Default.savePath;
+                        if(!string.IsNullOrEmpty(defineExportPath))
+                            exportPath = defineExportPath;
+                        else
+                            exportPath = Settings.Default.savePath;
                         exporter.SaveToFile(exportPath, new UTF8Encoding(false));
 
                         Console.WriteLine(
