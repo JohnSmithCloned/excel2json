@@ -144,101 +144,109 @@ namespace excel2json
             JsonData lastJD = null;
             for (int i = firstDataRow; i < sheet.Rows.Count; i++)//逐行读取数据
             {
-                DebugMessage.rowIndex = i;
-                DataRow row = sheet.Rows[i];
-                bool foundKeyName = false;
-                for (int j = 0; j < kCount; j++)
+                try
                 {
-                    string keyName = row[j].ToString();
-                    bool keyNameFilled = !string.IsNullOrEmpty(keyName);
-                    if (keyNameFilled)
+                    DebugMessage.rowIndex = i;
+                    DataRow row = sheet.Rows[i];
+                    bool foundKeyName = false;
+                    for (int j = 0; j < kCount; j++)
                     {
-                        DebugMessage.colIndex = j;
-                        if (j == 0) //第一层 
+                        string keyName = row[j].ToString();
+                        bool keyNameFilled = !string.IsNullOrEmpty(keyName);
+                        if (keyNameFilled)
                         {
-                            //有填写子key 则新建JsonData
-                            KeyStrList[0] = keyName;
-                            if (outerJd.ContainsKey(keyName))
+                            DebugMessage.colIndex = j;
+                            if (j == 0) //第一层 
                             {
-                                ShowDublicateKeyError(j, keyName);
-                                return null;
-                            }
-                            outerJd[keyName] = new JsonData();
-                            lastJD = outerJd[keyName];
-                        }
-                        else if (j == 1) //第二层
-                        {
-                            KeyStrList[1] = keyName;
-                            var fatherJd = outerJd[KeyStrList[0]];
-                            if (fatherJd.ContainsKey(keyName))
-                            {
-                                ShowDublicateKeyError(j, keyName);
-                                return null;
-                            }
-                            fatherJd[keyName] = new JsonData();
-                            lastJD = fatherJd[keyName];
-                        }
-                        else if (j == 2) //第三层
-                        {
-                            KeyStrList[2] = keyName;
-                            var fatherJd1 = outerJd[KeyStrList[0]];
-                            var fatherJd2 = fatherJd1[KeyStrList[1]];
-                            if (fatherJd2.ContainsKey(keyName))
-                            {
-                                ShowDublicateKeyError(j, keyName);
-                                return null;
-                            }
-                            fatherJd2[keyName] = new JsonData();
-                            lastJD = fatherJd2[keyName];
-                        }
-                        foundKeyName = true;
-                    }
-                    //Console.WriteLine($"keyName {j} = {keyName}");
-                }
-                bool isGlobalSheet = sheet.TableName == "GlobalConfig";
-                if (foundKeyName)
-                    for (int m = kCount; m < sheet.Columns.Count; m++)
-                    {
-                        DebugMessage.colIndex = m;
-                        string tileContent = row[m].ToString().Trim();
-                        string paramName = headerDic[m]; //字段名 ItemId
-                        string dataType = headerDataType[m]; //数据类型 String
-                        DebugMessage.paramName = paramName;
-                        if (!string.IsNullOrEmpty(tileContent) && !string.IsNullOrEmpty(paramName)
-                            && !string.IsNullOrEmpty(dataType))
-                        {
-                            if (isGlobalSheet)//常量表特殊处理
-                            {
-                                //常量表 数字 字符串 数组
-                                string fatherKey = KeyStrList[0].Trim();
-                                object obj = ParseValueString(tileContent.Trim());
-                                switch (obj)
+                                //有填写子key 则新建JsonData
+                                KeyStrList[0] = keyName;
+                                if (outerJd.ContainsKey(keyName))
                                 {
-                                    case bool _:
-                                        outerJd[fatherKey] = (bool)obj;
-                                        break;
-                                    case string _:
-                                        outerJd[fatherKey] = (string)obj;
-                                        break;
-                                    case long _:
-                                        outerJd[fatherKey] = (long)obj;
-                                        break;
-                                    case float _:
-                                        outerJd[fatherKey] = (float)obj;
-                                        break;
-                                    case JsonData _:
-                                        outerJd[fatherKey] = (JsonData)obj;
-                                        break;
+                                    ShowDublicateKeyError(j, keyName);
+                                    return null;
+                                }
+                                outerJd[keyName] = new JsonData();
+                                lastJD = outerJd[keyName];
+                            }
+                            else if (j == 1) //第二层
+                            {
+                                KeyStrList[1] = keyName;
+                                var fatherJd = outerJd[KeyStrList[0]];
+                                if (fatherJd.ContainsKey(keyName))
+                                {
+                                    ShowDublicateKeyError(j, keyName);
+                                    return null;
+                                }
+                                fatherJd[keyName] = new JsonData();
+                                lastJD = fatherJd[keyName];
+                            }
+                            else if (j == 2) //第三层
+                            {
+                                KeyStrList[2] = keyName;
+                                var fatherJd1 = outerJd[KeyStrList[0]];
+                                var fatherJd2 = fatherJd1[KeyStrList[1]];
+                                if (fatherJd2.ContainsKey(keyName))
+                                {
+                                    ShowDublicateKeyError(j, keyName);
+                                    return null;
+                                }
+                                fatherJd2[keyName] = new JsonData();
+                                lastJD = fatherJd2[keyName];
+                            }
+                            foundKeyName = true;
+                        }
+                        //Console.WriteLine($"keyName {j} = {keyName}");
+                    }
+                    bool isGlobalSheet = sheet.TableName == "GlobalConfig";
+                    if (foundKeyName)
+                        for (int m = kCount; m < sheet.Columns.Count; m++)
+                        {
+                            DebugMessage.colIndex = m;
+                            string tileContent = row[m].ToString().Trim();
+                            string paramName = headerDic[m]; //字段名 ItemId
+                            string dataType = headerDataType[m]; //数据类型 String
+                            DebugMessage.paramName = paramName;
+                            if (!string.IsNullOrEmpty(tileContent) && !string.IsNullOrEmpty(paramName)
+                                && !string.IsNullOrEmpty(dataType))
+                            {
+                                if (isGlobalSheet)//常量表特殊处理
+                                {
+                                    //常量表 数字 字符串 数组
+                                    string fatherKey = KeyStrList[0].Trim();
+                                    object obj = ParseValueString(tileContent.Trim());
+                                    switch (obj)
+                                    {
+                                        case bool _:
+                                            outerJd[fatherKey] = (bool)obj;
+                                            break;
+                                        case string _:
+                                            outerJd[fatherKey] = (string)obj;
+                                            break;
+                                        case long _:
+                                            outerJd[fatherKey] = (long)obj;
+                                            break;
+                                        case float _:
+                                            outerJd[fatherKey] = (float)obj;
+                                            break;
+                                        case JsonData _:
+                                            outerJd[fatherKey] = (JsonData)obj;
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    JsonData tempJd = ParseDataString(dataType, tileContent);
+                                    if (tempJd != null)
+                                        lastJD[paramName] = tempJd;
                                 }
                             }
-                            else
-                            {
-                                JsonData tempJd = ParseDataString(dataType, tileContent);
-                                if (tempJd != null)
-                                    lastJD[paramName] = tempJd;
-                            }
                         }
-                    }
+                }
+                catch (Exception e)
+                {
+                    string msg = $"行号:{i}有问题";
+                    MessageBox.Show($"{msg} {e.ToString()}");
+                }
             }
             //Console.WriteLine(outerJd.ToJson());
             return importData;
