@@ -13,6 +13,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Diagnostics;
 
 namespace excel2json.GUI
 {
@@ -118,39 +119,21 @@ namespace excel2json.GUI
             foreach (var item in listBox1.Items)
                 Settings.Default.lastFileList.Add(item.ToString());
 
+            var st = Settings.Default;
+            st.Compiler_Path = textBox_compiler.Text;
+            st.configProtoPath = textBox_csProtoPath.Text;
+            st.protoPath = textBox_protoPath.Text;
+
             Settings.Default.Save();
 
         }
-        /// <summary>
-        /// [测试按钮]proto目录下所有proto文件 生成cs proto文件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string startUpPath = Assembly.GetExecutingAssembly().Location;
-            startUpPath = Path.GetDirectoryName(startUpPath);
-            string protocPath = Path.Combine(startUpPath, @"protoc.exe");
-            //生成xxproto.cs 调用protoc.exe 跟本程序同目录
-            string filename = protocPath;
 
-            string protoPath = this.textBox_protoPath.Text;
-            string csProtoPath = this.textBox_csProtoPath.Text;
-            string[] files = Directory.GetFiles(protoPath, "*.proto", SearchOption.AllDirectories);
-            List<string> fileList = files.ToList();
-            foreach (string fileName in fileList)
-            {
-                string cParams = $"-I={protoPath} --csharp_out={csProtoPath}   {fileName}";
-                var proc = System.Diagnostics.Process.Start(filename, cParams);
-            }
-
-        }
         /// <summary>
         /// 全套流程 excel to protobuf
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void OnBtnExportProtobuf(object sender, EventArgs e)
         {
             string savePath = textBox_savePath.Text;
             if (string.IsNullOrEmpty(savePath))
@@ -167,7 +150,8 @@ namespace excel2json.GUI
                 //一个excel可能导出多个文件额
                 string protoPath = this.textBox_protoPath.Text;
                 string datPath = this.textBox_savePath.Text;
-                DFExcelReader exporter = new DFExcelReader(excel, protoPath, datPath);
+                string csProtoPath = this.textBox_csProtoPath.Text;
+                DFExcelReader exporter = new DFExcelReader(excel, protoPath, datPath, csProtoPath);
                 //-- Export path
                 string exportPath;
                 exportPath = textBox_savePath.Text;
@@ -194,9 +178,22 @@ namespace excel2json.GUI
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnOpenData_Click(object sender, EventArgs e)
         {
+            if (Directory.Exists(textBox_savePath.Text))
+                Process.Start("explorer.exe", textBox_savePath.Text);
+        }
 
+        private void btnOpenProto_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(textBox_protoPath.Text))
+                Process.Start("explorer.exe", textBox_protoPath.Text);
+        }
+
+        private void btnOpenConfig_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(textBox_csProtoPath.Text))
+                Process.Start("explorer.exe", textBox_csProtoPath.Text);
         }
     }
 }

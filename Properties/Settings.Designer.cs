@@ -57,5 +57,29 @@ namespace excel2json.Properties {
                 this["Compiler_Path"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string configProtoPath {
+            get {
+                return ((string)(this["configProtoPath"]));
+            }
+            set {
+                this["configProtoPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string protoPath {
+            get {
+                return ((string)(this["protoPath"]));
+            }
+            set {
+                this["protoPath"] = value;
+            }
+        }
     }
 }

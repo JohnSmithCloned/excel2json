@@ -90,6 +90,7 @@ namespace excel2json
         /// <returns></returns>
         string ConvertTypeName2CS(string oldName)
         {
+            if(string.IsNullOrEmpty(oldName)) return null;
             string saveOldName = oldName;
             oldName = oldName.Trim().ToLower();
             if (oldTypeDic.ContainsKey(oldName))//旧版数据类型转换
@@ -104,10 +105,11 @@ namespace excel2json
         }
         //key = sheet名  value = {key=变量名 value=数据类型}
         Dictionary<string, Dictionary<string, string>> headerDic;
-        public DFExcelReader(ExcelLoader excel, string protoPath, string _datPath)
+        public DFExcelReader(ExcelLoader excel, string protoPath, string _datPath, string _csProtoPath)
         {
             this.protoPath = protoPath;
             this.datPath = _datPath;
+            this.dfProtoPath = _csProtoPath;
             //1个excel文件里面有多个sheet 同名合并
             //有效的sheet
             validSheets = new List<DataTable>();
@@ -140,7 +142,8 @@ namespace excel2json
             GenerateProtoObj();
             //构造数据序列化保存到硬盘
             SerializeDatFile();
-            MessageBox.Show(debugInfo);
+            if (!string.IsNullOrEmpty(debugInfo))
+                MessageBox.Show(debugInfo);
         }
         /// <summary>
         /// 收集变量名
@@ -173,7 +176,7 @@ namespace excel2json
                             //变量名和类型都没有写 则后面的内容跳过
                             break;
                         }
-                        debugInfo += $"类型{dataTypeName} 变量名{variableName} \n";
+                        //debugInfo += $"类型{dataTypeName} 变量名{variableName} \n";
                         if (isKeyName && isEmptyType)
                         {
                             //Key列 视为int32
@@ -204,6 +207,10 @@ namespace excel2json
         /// DAT文件保存路径
         /// </summary>
         string datPath;
+        /// <summary>
+        /// df工程的proto文件路径
+        /// </summary>
+        string dfProtoPath;
         /// <summary>
         /// 生成Proto文件
         /// </summary>
@@ -359,7 +366,6 @@ message Excel_{0}
                         if (validColDic.ContainsKey(j))
                         {
                             debugInfo += $"重复变量名 {dataTypeName} \n";
-                            MessageBox.Show(debugInfo);
                             throw new Exception();
                         }
                         else
@@ -673,13 +679,12 @@ message Excel_{0}
             string protocILRPath = Path.Combine(startUpPath, "protocILRuntime.exe");
 
             string _protoPath = this.protoPath;
-            string csProtoPath = this.protoPath;
-            string csProtoILRPath = Path.Combine(csProtoPath, "ILRProtoCode");
+            string csProtoILRPath = this.dfProtoPath;
             string[] files = Directory.GetFiles(_protoPath, "*.proto", SearchOption.AllDirectories);
             List<string> fileList = files.ToList();
             foreach (string fileName in fileList)
             {
-                string cParams = $"{protocPath} -I={_protoPath} --csharp_out={csProtoPath}   {fileName}";
+                string cParams = $"{protocPath} -I={_protoPath} --csharp_out={this.protoPath}   {fileName}";
                 Common.Cmd(cParams);
 
                 string cParams2 = $"{protocILRPath} -I={_protoPath} --csharp_out={csProtoILRPath}   {fileName}";
@@ -765,8 +770,6 @@ message Excel_{0}
 
         internal static string Cmd(string str)
         {
-            MessageBox.Show($"{str}");
-            //return null;
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo.FileName = "cmd.exe";
             process.StartInfo.UseShellExecute = false;

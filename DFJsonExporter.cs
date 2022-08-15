@@ -274,6 +274,8 @@ namespace excel2json
                         break;
                     case "integer":
                     case "int":
+                    case "int32":
+                    case "int64":
                         obj = new JsonData(long.Parse(data));
                         break;
                     case "float":
@@ -281,6 +283,8 @@ namespace excel2json
                         obj = new JsonData((double)decimal.Round(number, 4));
                         break;
                     case "array":
+                    case "int32[]":
+                    case "string[]":
                         obj = ParseStringToJsonData(data);
                         break;
                 }

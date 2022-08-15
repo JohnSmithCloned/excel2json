@@ -43,13 +43,16 @@
             this.textBox_compiler = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.btn_compiler = new System.Windows.Forms.Button();
+            this.btnOpenData = new System.Windows.Forms.Button();
+            this.btnOpenProto = new System.Windows.Forms.Button();
+            this.btnOpenConfig = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox_savePath
             // 
             this.textBox_savePath.Location = new System.Drawing.Point(26, 71);
             this.textBox_savePath.Name = "textBox_savePath";
-            this.textBox_savePath.Size = new System.Drawing.Size(290, 20);
+            this.textBox_savePath.Size = new System.Drawing.Size(266, 20);
             this.textBox_savePath.TabIndex = 0;
             // 
             // label1
@@ -63,7 +66,7 @@
             // 
             // button_saveToFile
             // 
-            this.button_saveToFile.Location = new System.Drawing.Point(22, 442);
+            this.button_saveToFile.Location = new System.Drawing.Point(30, 402);
             this.button_saveToFile.Name = "button_saveToFile";
             this.button_saveToFile.Size = new System.Drawing.Size(124, 40);
             this.button_saveToFile.TabIndex = 2;
@@ -75,7 +78,7 @@
             // 
             this.listBox1.AllowDrop = true;
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(22, 309);
+            this.listBox1.Location = new System.Drawing.Point(27, 265);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(347, 108);
             this.listBox1.TabIndex = 3;
@@ -86,7 +89,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 281);
+            this.label2.Location = new System.Drawing.Point(24, 239);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(93, 13);
             this.label2.TabIndex = 4;
@@ -94,7 +97,7 @@
             // 
             // button_clearList
             // 
-            this.button_clearList.Location = new System.Drawing.Point(149, 273);
+            this.button_clearList.Location = new System.Drawing.Point(142, 232);
             this.button_clearList.Name = "button_clearList";
             this.button_clearList.Size = new System.Drawing.Size(135, 27);
             this.button_clearList.TabIndex = 5;
@@ -104,51 +107,51 @@
             // 
             // btn_export_protobuf
             // 
-            this.btn_export_protobuf.Location = new System.Drawing.Point(170, 442);
+            this.btn_export_protobuf.Location = new System.Drawing.Point(178, 402);
             this.btn_export_protobuf.Name = "btn_export_protobuf";
             this.btn_export_protobuf.Size = new System.Drawing.Size(114, 40);
             this.btn_export_protobuf.TabIndex = 7;
             this.btn_export_protobuf.Text = "导出Protobuf";
             this.btn_export_protobuf.UseVisualStyleBackColor = true;
-            this.btn_export_protobuf.Click += new System.EventHandler(this.button2_Click);
+            this.btn_export_protobuf.Click += new System.EventHandler(this.OnBtnExportProtobuf);
             // 
             // textBox_protoPath
             // 
-            this.textBox_protoPath.Location = new System.Drawing.Point(30, 128);
+            this.textBox_protoPath.Location = new System.Drawing.Point(26, 110);
             this.textBox_protoPath.Name = "textBox_protoPath";
-            this.textBox_protoPath.Size = new System.Drawing.Size(290, 20);
+            this.textBox_protoPath.Size = new System.Drawing.Size(266, 20);
             this.textBox_protoPath.TabIndex = 8;
             this.textBox_protoPath.Text = "D:\\ProtoPath";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 112);
+            this.label3.Location = new System.Drawing.Point(27, 94);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(103, 13);
+            this.label3.Size = new System.Drawing.Size(154, 13);
             this.label3.TabIndex = 9;
-            this.label3.Text = "proto文件保存路径";
+            this.label3.Text = "proto文件保存路径 工程之外";
             // 
             // textBox_csProtoPath
             // 
-            this.textBox_csProtoPath.Location = new System.Drawing.Point(30, 181);
+            this.textBox_csProtoPath.Location = new System.Drawing.Point(30, 149);
             this.textBox_csProtoPath.Name = "textBox_csProtoPath";
-            this.textBox_csProtoPath.Size = new System.Drawing.Size(290, 20);
+            this.textBox_csProtoPath.Size = new System.Drawing.Size(266, 20);
             this.textBox_csProtoPath.TabIndex = 10;
-            this.textBox_csProtoPath.Text = "D:\\ProtoPath";
+            this.textBox_csProtoPath.Text = "C:\\WorkSpace\\DevClient\\Bridge\\Config\\ConfigProto";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(27, 165);
+            this.label4.Location = new System.Drawing.Point(27, 133);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(159, 13);
+            this.label4.Size = new System.Drawing.Size(156, 13);
             this.label4.TabIndex = 11;
-            this.label4.Text = "Bridge目录 \\Config\\ConfigProto";
+            this.label4.Text = "Bridge工程\\Config\\ConfigProto";
             // 
             // textBox_compiler
             // 
-            this.textBox_compiler.Location = new System.Drawing.Point(30, 247);
+            this.textBox_compiler.Location = new System.Drawing.Point(27, 206);
             this.textBox_compiler.Name = "textBox_compiler";
             this.textBox_compiler.Size = new System.Drawing.Size(141, 20);
             this.textBox_compiler.TabIndex = 13;
@@ -158,7 +161,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(27, 231);
+            this.label5.Location = new System.Drawing.Point(24, 190);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(87, 13);
             this.label5.TabIndex = 14;
@@ -166,7 +169,7 @@
             // 
             // btn_compiler
             // 
-            this.btn_compiler.Location = new System.Drawing.Point(177, 244);
+            this.btn_compiler.Location = new System.Drawing.Point(174, 203);
             this.btn_compiler.Name = "btn_compiler";
             this.btn_compiler.Size = new System.Drawing.Size(75, 23);
             this.btn_compiler.TabIndex = 15;
@@ -174,11 +177,44 @@
             this.btn_compiler.UseVisualStyleBackColor = true;
             this.btn_compiler.Click += new System.EventHandler(this.btn_compiler_Click);
             // 
+            // btnOpenData
+            // 
+            this.btnOpenData.Location = new System.Drawing.Point(299, 68);
+            this.btnOpenData.Name = "btnOpenData";
+            this.btnOpenData.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenData.TabIndex = 16;
+            this.btnOpenData.Text = "打开";
+            this.btnOpenData.UseVisualStyleBackColor = true;
+            this.btnOpenData.Click += new System.EventHandler(this.btnOpenData_Click);
+            // 
+            // btnOpenProto
+            // 
+            this.btnOpenProto.Location = new System.Drawing.Point(298, 110);
+            this.btnOpenProto.Name = "btnOpenProto";
+            this.btnOpenProto.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenProto.TabIndex = 17;
+            this.btnOpenProto.Text = "打开";
+            this.btnOpenProto.UseVisualStyleBackColor = true;
+            this.btnOpenProto.Click += new System.EventHandler(this.btnOpenProto_Click);
+            // 
+            // btnOpenConfig
+            // 
+            this.btnOpenConfig.Location = new System.Drawing.Point(302, 147);
+            this.btnOpenConfig.Name = "btnOpenConfig";
+            this.btnOpenConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenConfig.TabIndex = 18;
+            this.btnOpenConfig.Text = "打开";
+            this.btnOpenConfig.UseVisualStyleBackColor = true;
+            this.btnOpenConfig.Click += new System.EventHandler(this.btnOpenConfig_Click);
+            // 
             // DFExcelToolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(401, 560);
+            this.ClientSize = new System.Drawing.Size(395, 467);
+            this.Controls.Add(this.btnOpenConfig);
+            this.Controls.Add(this.btnOpenProto);
+            this.Controls.Add(this.btnOpenData);
             this.Controls.Add(this.btn_compiler);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.textBox_compiler);
@@ -218,5 +254,8 @@
         private System.Windows.Forms.TextBox textBox_compiler;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btn_compiler;
+        private System.Windows.Forms.Button btnOpenData;
+        private System.Windows.Forms.Button btnOpenProto;
+        private System.Windows.Forms.Button btnOpenConfig;
     }
 }
