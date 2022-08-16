@@ -260,9 +260,15 @@ namespace excel2json
         JsonData ParseDataString(string format, string data)
         {
             JsonData obj = null;
+            string lowerStr = format.ToLower();
+            if (lowerStr.EndsWith("[]"))
+            {
+                obj = ParseStringToJsonData(data);
+                return obj;
+            }
             try
             {
-                switch (format.ToLower())
+                switch (lowerStr)
                 {
                     case "string":
                         obj = new JsonData(data);
@@ -283,8 +289,9 @@ namespace excel2json
                         obj = new JsonData((double)decimal.Round(number, 4));
                         break;
                     case "array":
-                    case "int32[]":
-                    case "string[]":
+                    //case "int32[]":
+                    //case "string[]":
+                    //case "float[]":
                         obj = ParseStringToJsonData(data);
                         break;
                 }
