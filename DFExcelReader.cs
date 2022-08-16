@@ -1,16 +1,14 @@
-﻿using Google.Protobuf.Collections;
+﻿using excel2json.Properties;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using excel2json.Properties;
 
 namespace excel2json
 {
@@ -54,7 +52,7 @@ namespace excel2json
             "bool","string"
         };
         /// <summary>
-        /// 变量类型名=>proto变量类型
+        /// 变量类型名=>proto变量类型 example:int32[]=>repeated int32
         /// </summary>
         /// <param name="oldName"></param>
         /// <returns></returns>
@@ -90,26 +88,42 @@ namespace excel2json
         /// <returns></returns>
         string ConvertTypeName2CS(string oldName)
         {
-            if(string.IsNullOrEmpty(oldName)) return null;
+            if (string.IsNullOrEmpty(oldName)) return null;
             string saveOldName = oldName;
             oldName = oldName.Trim().ToLower();
-            if (oldTypeDic.ContainsKey(oldName))//旧版数据类型转换
-                oldName = oldTypeDic[oldName];
-            if (validTypeNames.Contains(oldName))
-                return oldName;
-            else
+            string checkName = oldName;
+            if (oldTypeDic.ContainsKey(checkName))//旧版数据类型转换
+                checkName = oldTypeDic[checkName];
+            string tail = "";
+            if (checkName.EndsWith("[]"))
+            {
+                checkName = checkName.Substring(0, checkName.Length - 2);
+                tail = "[]";
+            }
+            if (!validTypeNames.Contains(checkName))
             {
                 debugInfo += $"不支持的变量类型 {saveOldName}\n";
                 return null;
             }
+            return checkName + tail;
+        }
+        /// <summary>
+        /// Sheet名 去掉_后面的
+        /// </summary>
+        /// <param name="sheetName"></param>
+        /// <returns></returns>
+        string TrimSheetName(string sheetName)
+        {
+            return Regex.Replace(sheetName, @"_.*", "");
         }
         //key = sheet名  value = {key=变量名 value=数据类型}
         Dictionary<string, Dictionary<string, string>> headerDic;
-        public DFExcelReader(ExcelLoader excel, string protoPath, string _datPath, string _csProtoPath)
+        public DFExcelReader(ExcelLoader excel, string protoPath, string _datPath, string _csProtoPath, string _excelName)
         {
-            this.protoPath = protoPath;
             this.datPath = _datPath;
             this.dfProtoPath = _csProtoPath;
+            this.excelFileName = _excelName;
+
             //1个excel文件里面有多个sheet 同名合并
             //有效的sheet
             validSheets = new List<DataTable>();
@@ -126,24 +140,34 @@ namespace excel2json
                 if (sheet.Columns.Count > 0 && sheet.Rows.Count > 0)
                     validSheets.Add(sheet);
             }
-            CollectVariableNames();
-            foreach (var sheetPair in headerDic)
+            if (validSheets.Count > 0)
             {
-                //sheet转对应的 *.proto
-                GenerateProtoFile(sheetPair.Key);
+                string subDirName = TrimSheetName(validSheets[0].TableName);
+                //配置表名是中文 只好改成找到第一个sheet名作为子目录名称
+                this.protoPath = Path.Combine(protoPath, subDirName);
+                if (!Directory.Exists(this.protoPath))//建立子目录
+                {
+                    Directory.CreateDirectory(this.protoPath);
+                }
+                CollectVariableNames();
+                foreach (var sheetPair in headerDic)
+                {
+                    //sheet转对应的 *.proto
+                    GenerateProtoFile(sheetPair.Key);
+                }
+                //调用protoc.exe proto文本 生成 c#proto代码文件 
+                CMDGenerateCSProto();
+                //所有proto.cs文件 生成一个dll
+                CMDGenerateDLL();
+                //读取dll 反射构造数据
+                ReadDllToAssembly();
+                //Excel表格读取 保存到构造数据里面
+                GenerateProtoObj();
+                //构造数据序列化保存到硬盘
+                SerializeDatFile();
+                if (!string.IsNullOrEmpty(debugInfo))
+                    MessageBox.Show(debugInfo);
             }
-            //调用protoc.exe proto文本 生成 c#proto代码文件 
-            CMDGenerateCSProto();
-            //所有proto.cs文件 生成一个dll
-            CMDGenerateDLL();
-            //读取dll 反射构造数据
-            ReadDllToAssembly();
-            //Excel表格读取 保存到构造数据里面
-            GenerateProtoObj();
-            //构造数据序列化保存到硬盘
-            SerializeDatFile();
-            if (!string.IsNullOrEmpty(debugInfo))
-                MessageBox.Show(debugInfo);
         }
         /// <summary>
         /// 收集变量名
@@ -155,7 +179,7 @@ namespace excel2json
                 headerDic = new Dictionary<string, Dictionary<string, string>>();
                 foreach (DataTable sheet in validSheets)
                 {
-                    string sheetName = sheet.TableName;
+                    string sheetName = TrimSheetName(sheet.TableName);
                     if (!headerDic.ContainsKey(sheetName))
                         headerDic[sheetName] = new Dictionary<string, string>();
                     var innerDic = headerDic[sheetName];
@@ -169,19 +193,20 @@ namespace excel2json
                         //变量名去空格
                         string variableName = dataNameRow[col].ToString().Trim();
                         bool isEmptyName = string.IsNullOrEmpty(variableName);
-                        bool isKeyName = Regex.Match(variableName, @"^Key[0-9]?$").Success;
+                        bool isKeyName = Regex.Match(variableName, @"^Key[0-9]?").Success;
                         bool isEmptyType = string.IsNullOrEmpty(dataTypeName);
-                        if (isEmptyName && isEmptyType)
-                        {
-                            //变量名和类型都没有写 则后面的内容跳过
-                            break;
-                        }
+                        //if (isEmptyName && isEmptyType)
+                        //{
+                        //    //变量名和类型都没有写 则后面的内容跳过
+                        //    break;
+                        //}
                         //debugInfo += $"类型{dataTypeName} 变量名{variableName} \n";
-                        if (isKeyName && isEmptyType)
+                        if (isKeyName)
                         {
+                            string _type = isEmptyType ? "int32" : dataTypeName;
                             //Key列 视为int32
                             if (!innerDic.ContainsKey(variableName))
-                                innerDic.Add(variableName, "int32");
+                                innerDic.Add(variableName, _type);
                         }
                         if (!isKeyName && !isEmptyType)//普通的变量
                         {
@@ -211,6 +236,10 @@ namespace excel2json
         /// df工程的proto文件路径
         /// </summary>
         string dfProtoPath;
+        /// <summary>
+        /// 当前Excel文件名称
+        /// </summary>
+        string excelFileName;
         /// <summary>
         /// 生成Proto文件
         /// </summary>
@@ -324,7 +353,7 @@ message Excel_{0}
             {
                 //obj准备
                 string sheetName = sheet.TableName;
-                string trimedSheetName = Regex.Replace(sheetName, @"_.*", "");
+                string trimedSheetName = TrimSheetName(sheetName);
                 if (!_excelInsDic.ContainsKey(trimedSheetName))
                     continue;
                 //数据保存到_excelIns里
@@ -347,20 +376,24 @@ message Excel_{0}
                 {
                     DataColumn col = sheet.Columns[j];
                     //变量类型 去空格 变小写
-                    string dataTypeName = ConvertTypeName2CS(dataTypeRow[col].ToString());
+                    string dataTypeName = ConvertTypeName2Proto(dataTypeRow[col].ToString());
                     //变量名去空格
                     string variableName = dataNameRow[col].ToString().Trim();
                     bool isEmptyName = string.IsNullOrEmpty(variableName);//变量名空
-                    bool isKeyName = Regex.Match(variableName, @"^Key[0-9]?$").Success;//KeyX
+                    bool isKeyName = Regex.Match(variableName, @"^Key[0-9]?").Success;//KeyX
                     bool isEmptyType = string.IsNullOrEmpty(dataTypeName);//类型空
-                    if (isEmptyName && isEmptyType)
-                    {
-                        //变量名和类型都没有写 则后面的内容跳过
-                        break;
-                    }
+                    //if (isEmptyName && isEmptyType)
+                    //{
+                    //    //变量名和类型都没有写 则后面的内容跳过
+                    //    break;
+                    //}
                     maxValidColIndex = j;
                     if (isKeyName)//Key列必读
-                        validColDic.Add(j, new ColInfo(j, "int32", variableName, true));
+                    {
+                        string _type = isEmptyType ? "int32" : dataTypeName;
+                        //判断Key是数字还是字符串
+                        validColDic.Add(j, new ColInfo(j, _type, variableName, true));
+                    }
                     else if (!isEmptyName && !isEmptyType)//已配置变量名和类型
                     {
                         if (validColDic.ContainsKey(j))
@@ -369,7 +402,10 @@ message Excel_{0}
                             throw new Exception();
                         }
                         else
-                            validColDic.Add(j, new ColInfo(j, dataTypeName, variableName, false));
+                        {
+                            string csTypeName = ConvertTypeName2CS(dataTypeRow[col].ToString());
+                            validColDic.Add(j, new ColInfo(j, csTypeName, variableName, false));
+                        }
                     }
                 }
                 //保留最近一次读取到的KeyX
@@ -410,6 +446,10 @@ message Excel_{0}
                         FieldInfo insField = insType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
                         if (insField != null)
                         {
+                            if (valueObj == null)
+                            {
+                                throw new Exception();
+                            }
                             insField?.SetValue(ins, valueObj);
                         }
                     }
@@ -724,10 +764,17 @@ message Excel_{0}
                 if (!_excelInsDic.ContainsKey(sheetName))
                 {
                     //sheetName 转换
-                    string validSheetName = Regex.Replace(sheetName, @"_.*", "");
-                    string instName = $"ConfigData.Excel_{validSheetName}";
-                    var obj = _assembly.CreateInstance(instName);
-                    _excelInsDic.Add(validSheetName, obj);
+                    string validSheetName = TrimSheetName(sheetName);
+                    if (!_excelInsDic.ContainsKey(validSheetName))
+                    {
+                        string instName = $"ConfigData.Excel_{validSheetName}";
+                        var obj = _assembly.CreateInstance(instName);
+                        if (obj == null)
+                        {
+                            throw new Exception();
+                        }
+                        _excelInsDic.Add(validSheetName, obj);
+                    }
                 }
             }
         }

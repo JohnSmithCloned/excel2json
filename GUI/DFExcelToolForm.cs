@@ -1,19 +1,10 @@
-﻿using excel2json.Properties;
+﻿using CCWin;
+using excel2json.Properties;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using CCWin;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Reflection;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
 
 namespace excel2json.GUI
 {
@@ -35,6 +26,13 @@ namespace excel2json.GUI
 
             if (!string.IsNullOrEmpty(Settings.Default.Compiler_Path))
                 textBox_compiler.Text = Settings.Default.Compiler_Path;
+
+            var st = Settings.Default;
+
+            textBox_csProtoPath.Text = st.configProtoPath;
+            textBox_protoPath.Text = st.protoPath;
+
+            btn_export_protobuf.Enabled = false;//先不要用protobuf转表了 我想直接用鲁班
         }
         /// <summary>
         /// 点击导出并保存
@@ -123,8 +121,8 @@ namespace excel2json.GUI
             st.Compiler_Path = textBox_compiler.Text;
             st.configProtoPath = textBox_csProtoPath.Text;
             st.protoPath = textBox_protoPath.Text;
-
-            Settings.Default.Save();
+            st.savePath = textBox_savePath.Text;
+            st.Save();
 
         }
 
@@ -151,11 +149,8 @@ namespace excel2json.GUI
                 string protoPath = this.textBox_protoPath.Text;
                 string datPath = this.textBox_savePath.Text;
                 string csProtoPath = this.textBox_csProtoPath.Text;
-                DFExcelReader exporter = new DFExcelReader(excel, protoPath, datPath, csProtoPath);
-                //-- Export path
-                string exportPath;
-                exportPath = textBox_savePath.Text;
-                //exporter.SaveToFile(exportPath, new UTF8Encoding(false));
+                string excelFileName = Path.GetFileNameWithoutExtension(path);
+                DFExcelReader exporter = new DFExcelReader(excel, protoPath, datPath, csProtoPath, excelFileName);
             }
             Settings.Default.savePath = textBox_savePath.Text;
 
