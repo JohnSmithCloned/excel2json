@@ -64,6 +64,8 @@ namespace excel2json.GUI
             Settings.Default.savePath = textBox_savePath.Text;
 
             MessageBox.Show($"文件数量{listBox1.Items.Count}", "导出操作完成");
+            //string output = DFJsonExporter.DebugMessage.GetAllSheetNameList();
+            //MessageBox.Show($"report:{output}", "导出操作完成");
         }
 
         /// <summary>

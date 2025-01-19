@@ -102,13 +102,40 @@ namespace excel2json
             /// 字段名称
             /// </summary>
             public static string paramName;
+            static Dictionary<string, HashSet<string>> excelDic = new Dictionary<string, HashSet<string>>();
+            public static void AddSheetName(string name)
+            {
+                if (excelDic.ContainsKey(fileName) == false)
+                {
+                    excelDic.Add(fileName, new HashSet<string>());
+                }
+                excelDic[fileName].Add(name);
+            }
+            public static string GetAllSheetNameList()
+            {
+                string output = "";
+                foreach (var pair in excelDic)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(pair.Key);
+                    output += $"{fileName}: ";
+                    foreach (var sheetName in pair.Value)
+                    {
+                        output += sheetName + ", ";
+                    }
+                    output += "\n";
+                }
+                return output;
+            }
         }
+
+
 
         /// <summary>
         /// 以第一列为ID，转换成ID->Object的字典对象
         /// </summary>
         private object convertSheetToDict(DataTable sheet, bool lowcase, string excludePrefix, bool cellJson, bool allString)
         {
+            DebugMessage.AddSheetName(sheet.TableName);
             DebugMessage.sheetName = sheet.TableName;
             Dictionary<string, object> importData =
                 new Dictionary<string, object>();
@@ -120,7 +147,7 @@ namespace excel2json
             DataRow dataTypeRow = sheet.Rows[0];//数据类型这一行
 
             DataRow sheetHead = sheet.Rows[1];//字段名这一行key key1 这一行
-            //Key,Key1,Key2... 的列表
+                                              //Key,Key1,Key2... 的列表
             List<string> KeyList = new List<string>();
             for (int j = 0; j < sheet.Columns.Count; j++)
             {
@@ -289,9 +316,9 @@ namespace excel2json
                         obj = new JsonData((double)decimal.Round(number, 4));
                         break;
                     case "array":
-                    //case "int32[]":
-                    //case "string[]":
-                    //case "float[]":
+                        //case "int32[]":
+                        //case "string[]":
+                        //case "float[]":
                         obj = ParseStringToJsonData(data);
                         break;
                 }
